@@ -9,7 +9,7 @@ init.o: init.s
 	$(AS) init.s -o init.o
 
 blink.o: blink.c const.h
-	$(CC) -c blink.c -o blink.o -O0
+	$(CC) -c blink.c -o blink.o -O0 -g
 
 blink.elf: init.o blink.o
 	$(LD) -m armelf init.o blink.o -o blink.elf

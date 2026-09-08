@@ -5,14 +5,10 @@
         "dockerfile": "Dockerfile"
     },
 
-    "customizations": {
-        "vscode": {
-            "extensions": [
-                "ms-vscode.cpptools",
-                "ms-python.python"
-            ]
-        }
-    },
+    "forwardPorts": [
+        8000,
+        8765
+    ],
 
     "remoteUser": "root"
 }
