@@ -1,0 +1,5 @@
+# QEMU build files
+qemu/*.o
+qemu/*.elf
+qemu/*.img
+qemu/disasm.txt
