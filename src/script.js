@@ -773,3 +773,23 @@ function stopProgram()
         monitorId = null;
     }
 }
+
+const socket = new WebSocket("ws://localhost:8765");
+
+socket.onmessage = (event) => {
+
+    const led =
+        document.getElementById("led");
+
+    if (event.data === "LED_ON") {
+
+        led.classList.remove("off");
+        led.classList.add("on");
+    }
+
+    if (event.data === "LED_OFF") {
+
+        led.classList.remove("on");
+        led.classList.add("off");
+    }
+};
