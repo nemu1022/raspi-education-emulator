@@ -9,54 +9,57 @@
 
 <body>
 
-    <h1>Virtual Raspberry Pi Emulator</h1>
+    <h1>
+        <center>Virtual Raspberry Pi Emulator</center>
+    </h1>
 
     <div class="container">
+
 
         <div class="left-panel">
 
             <h2>C Program</h2>
 
             <div class="tabs">
+                <button id="mainTab" class="tab-button" onclick="showTab('main')">
+                    main.c
+                </button>
 
-    <button onclick="showTab('main')">
-        main.c
-    </button>
+                <button id="constTab" class="tab-button" onclick="showTab('const')">
+                    const.h
+                </button>
+            </div>
 
-    <button onclick="showTab('const')">
-        const.h
-    </button>
 
-</div>
-
-<textarea id="mainCode" class="editor">
+            <textarea id="mainCode" class="editor">
 #include "const.h"      // 定数の定義を読み込む
 
-// 悪い例: LEDを点灯して消灯する（点灯時間短すぎ）
-int main()
+int main(void) 
 {
-  // GPIOの機能設定
-  *GPFSEL1 = GPFSEL_VEC1;  // #10〜#19の設定
+    int sw;
 
-  // LED点灯 (LED_PORTの出力を1にする)
-  *GPSET0 = 1 << LED_PORT;
+    // GPIOの機能設定
+    *GPFSEL1 = GPFSEL_VEC1;  // #10〜#19の設定
 
-  // ** ここに待ち時間が必要 **
-  int i;
-  // 空ループで時間をつぶす
-  for (i = 0; i < 345000; i++) {}
-  
-  // LED消灯 (LED_PORTの出力を0にする)
-  *GPCLR0 = 1 << LED_PORT;
+    while(1){
+        
+    // GPLEV0の値 (GPIO #0〜#31それぞれが読み取った値) をswに代入
+    sw = *GPLEV0;
 
-  return 0;  // init.sに戻る
+        // SW1が押されているか?
+        if (sw & (1 << SW1_PORT)) {
+            *GPSET0 = 1 << LED_PORT; // SW1が押されていたらここが実行される
+        } else {
+            *GPCLR0 = 1 << LED_PORT;
+        }
+    }
+
+    return 0;  // init.sに戻る
 }
-</textarea>
 
-<textarea
-    id="constCode"
-    class="editor"
-    style="display:none;">
+            </textarea>
+
+            <textarea id="constCode" class="editor" style="display:none;">
 // GPIOを操作するための番地
 #define GPIO_BASE       (volatile int *)0x3f200000
 #define GPFSEL0         (GPIO_BASE + 0)  // GPIO #0〜9の機能選択
@@ -73,12 +76,15 @@ int main()
 #define LED_PORT        10  // LED
 
 #define SW1_PORT        13  // SW1
-</textarea>
+
+            </textarea>
 
 
-            <br>
+            <div id="status" class="status-area"></div>
+
 
             <button onclick="runCode()">実行</button>
+            <button onclick="stopCode()">停止</button>
 
         </div>
 
@@ -86,31 +92,57 @@ int main()
 
             <h2>Virtual I/O Board</h2>
 
-<div class="led-area">
+            <div class="led-area">
 
-    <p>Green LED</p>
+                <p>LED</p>
 
-    <div id="led" class="led off"></div>
+                <div id="led" class="led off"></div>
 
-</div>
-
-<div class="switch-area">
-
-    <p>SW1</p>
-
-    <button
-    id="sw1"
-    onmousedown="sw1Pressed = true"
-    onmouseup="sw1Pressed = false"
-    onmouseleave="sw1Pressed = false">
-
-    SW1
-
-</button>
-
-</div>
+            </div>
 
 
+            <div class="switch-area">
+
+                <p>スイッチ</p>
+
+                <button id="sw1" onmousedown="sw1Pressed = true" onmouseup="sw1Pressed = false"
+                    onmouseleave="sw1Pressed = false">
+
+                    SW1
+
+                </button>
+
+                <button id="sw2" onmousedown="sw2Pressed = true" onmouseup="sw2Pressed = false"
+                    onmouseleave="sw2Pressed = false">
+
+                    SW2
+
+                </button>
+
+                <button id="sw3" onmousedown="sw3Pressed = true" onmouseup="sw3Pressed = false"
+                    onmouseleave="sw3Pressed = false">
+
+                    SW3
+
+                </button>
+
+                <button id="sw4" onmousedown="sw4Pressed = true" onmouseup="sw4Pressed = false"
+                    onmouseleave="sw4Pressed = false">
+
+                    SW4
+
+                </button>
+
+            </div>
+
+            <div class="matrix-area">
+
+                <p>8x8ドットマトリックスLED</p>
+
+                <div id="ledMatrix" class="led-matrix">
+                </div>
+
+            </div>
 
             <h2>Registers</h2>
 
